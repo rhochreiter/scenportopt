@@ -12,8 +12,8 @@
   \tabular{ll}{
     Package: \tab scenportopt\cr
     Type: \tab Package\cr
-    Version: \tab 0.2-0\cr
-    Date: \tab 2014-04-09\cr
+    Version: \tab 0.2-1\cr
+    Date: \tab 2014-04-10\cr
     License: \tab GPL-3\cr
   }
 }

@@ -1,3 +1,8 @@
+v0.2-1 [140410]
+
+- added efficient.frontier() to compute efficient frontiers
+- added asset.apply() convenience function
+
 v0.2-0 [140409]
 
 - fixed all broken issues from the (unreleased) 0.1-1
