@@ -1,0 +1,23 @@
+v0.2-0 [140409]
+
+- fixed all broken issues from the (unreleased) 0.1-1
+- added convenience functions alpha() and objective()
+- active.extension() and long.only() for switching purposes
+- moved optimization modeling convenience functions to modopt.matlab
+- added nasset() and nscenario() to retrieve the number of assets and scenarios
+- added DAX30 2013 weekly return demo dataset
+
+v0.1-1 [130609]
+
+- Unreleased, buggy, broken private release
+- changed/overhauled model system completely
+- started externalization of constraints
+- localized model parameters within optimization functions
+- added long/short version of expected shortfall
+- included tests to conduct 130/30 optimization
+
+v0.1-0 [130604]
+
+- Initial public version on GitHub
+- Providing plain Markowitz, MAD and CVaR/Expected Shortfall
+- One demo data set: DJIA 2012 (crude weekly returns)

@@ -1,13 +1,35 @@
-optimal.portfolio <- function(scenario_set, model=NULL) {
-  if(is.null(model)) { model <- list() }
-  model <- model.check(model)
-  model <- model.scenario.check(model, scenario_set)  
+##### Scenario-based Portfolio Optimization (scenportopt)
+##### (c)2013-2014 Ronald Hochreiter <ron@hochreiter.net>
+##### http://www.finance-r.com/
+
+# Meta-function to optimize portfolios
+
+optimal.portfolio <- function(input=NULL) {  
+  # check whether the passed parameter is a portfolio.model
+  # if not, create a default model
+  if('portfolio.model' %in% class(input)) { 
+    model <- input 
+  } else {
+    model <- portfolio.model(input) 
+  }
+
+  # select appropriate optimization function
+  if (model$objective == "markowitz") { model <- optimal.portfolio.markowitz(model) }
+  if (model$objective == "mad") { 
+    if (model$active.extension) {
+      model <- optimal.portfolio.mad.long.short(model)
+    } else {  
+      model <- optimal.portfolio.mad(model)
+    }
+  }
+  if (model$objective == "expected.shortfall") {
+    if (model$active.extension) {
+      model <- optimal.portfolio.expected.shortfall.long.short(model)
+    } else {  
+      model <- optimal.portfolio.expected.shortfall(model) 
+    }
+  }
   
-  if (model$objective == "markowitz") { portfolio <- optimal.portfolio.markowitz(scenario_set, model) }
-  if (model$objective == "expected.shortfall") { portfolio <- optimal.portfolio.expected.shortfall(scenario_set, model) }
-  if (model$objective == "mad") { portfolio <- optimal.portfolio.mad(scenario_set, model) }    
-  
-  portfolio$model <- model
-  
-  return(portfolio)
+  # return model
+  return(model)
 }
