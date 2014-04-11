@@ -5,7 +5,7 @@
 # Add corresponding long/short constraints for a diverse set of
 # active extension portfolios (e.g. 130/30 portfolios)
 
-active.extension <- function(model, up, down) {
+active.extension <- function(model, up=130, down=30) {
   if(up > 1) { up <- up/100 }
   if(down > 1) { down <- down/100 }
 

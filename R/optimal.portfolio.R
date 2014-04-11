@@ -15,6 +15,12 @@ optimal.portfolio <- function(input=NULL) {
   }
 
   # select appropriate optimization function
+  if (model$objective == "1overN") {
+    model <- optimal.portfolio.1overN(model) 
+  }
+  if (model$objective == "momentum") {
+    model <- optimal.portfolio.momentum(model) 
+  }
   if (model$objective == "markowitz") {
     model <- optimal.portfolio.markowitz(model) 
   }

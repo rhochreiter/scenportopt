@@ -1,3 +1,9 @@
+v0.2-2 [140411]
+
+- added momentum portfolio composition
+- added scenario.apply() convenience function
+- added 1overN portfolio composition
+
 v0.2-1 [140410]
 
 - added efficient.frontier() to compute efficient frontiers

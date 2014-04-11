@@ -5,6 +5,9 @@
 # Overload print() for objects of S3 class portfolio.model
 
 print.portfolio.model <- function(model) {
-  # temporary empty
-  cat("Portfolio model\n===============\n")  
+  # currently only basic information
+  cat("# Portfolio model\n")  
+  cat("- Objective:", model$objective, "\n")
+  cat("- Scenarios:", model$scenarios, "\n")
+  cat("- Assets:", model$assets, "\n")
 }

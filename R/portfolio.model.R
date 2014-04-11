@@ -20,7 +20,9 @@ portfolio.model <- function(scenario_set) {
   model$sum.long <- NULL
   model$sum.short <- NULL
   if (is.null(model$active.extension)) { model$active.extension <- FALSE }
-
+  model$momentum.long <- NA
+  model$momentum.short <- NA
+  
   # default values - scenario
   model$data <- scenario_set
   model$assets <- dim(scenario_set)[2]
