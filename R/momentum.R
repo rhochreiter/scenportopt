@@ -4,7 +4,7 @@
 
 # set momentum parameters
 
-momentum <- function(model, nmomentum, nmomentum.short=NA) {
+momentum <- function(model, nmomentum, nmomentum.short=NULL) {
   model$momentum.long <- nmomentum
   model$momentum.short <- nmomentum.short
   return(model)

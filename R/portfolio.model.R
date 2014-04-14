@@ -9,19 +9,18 @@ portfolio.model <- function(scenario_set) {
   model <- list()
   
   # default values - model
-  if (is.null(model$objective)) { model$objective <- "markowitz" }
-  if (is.null(model$sum.portfolio)) { model$sum.portfolio <- 1 }
-  if (is.null(model$asset.bound.lower)) { model$asset.bound.lower <- 0 }
-  if (is.null(model$asset.bound.upper)) { model$asset.bound.upper <- 1 }
-  if (is.null(model$alpha)) { model$alpha <- 0.05 }  
-  if (is.null(model$precision)) { model$precision <- 8 }
+  model$objective <- "markowitz"
+  model$precision <- 8
+  model$active.extension <- FALSE
+  model$sum.portfolio <- 1
+  model$alpha <- 0.05
   model$min.mean <- NULL
+  model$max.mean <- NULL
   model$fix.mean <- NULL
   model$sum.long <- NULL
   model$sum.short <- NULL
-  if (is.null(model$active.extension)) { model$active.extension <- FALSE }
-  model$momentum.long <- NA
-  model$momentum.short <- NA
+  model$momentum.long <- NULL
+  model$momentum.short <- NULL
   
   # default values - scenario
   model$data <- scenario_set
@@ -29,7 +28,11 @@ portfolio.model <- function(scenario_set) {
   model$scenarios <- dim(scenario_set)[1]
   model$scenario.probabilities <- rep(1/model$scenarios, model$scenarios)
   model$asset.means <- as.vector(apply(scenario_set, 2, mean))
-
+  
+  # set upper bounds according to scenario set
+  model$asset.bound.lower <- rep(0, model$assets)
+  model$asset.bound.upper <- rep(1, model$assets)
+  
   # default values - portfolio
   model$portfolio <- NA
   

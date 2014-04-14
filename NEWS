@@ -1,3 +1,13 @@
+v0.3-0 [140414]
+
+- overhauled efficient frontier generation and plotting
+- added optimal.portfolio.reward() for mean maximization/minimization
+- risk(model) and asset.risk() convenience functions
+
+v0.2-3 [140412]
+
+- added upper.bound() and lower.bound() for assets
+
 v0.2-2 [140411]
 
 - added momentum portfolio composition

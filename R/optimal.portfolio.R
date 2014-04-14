@@ -4,7 +4,7 @@
 
 # Meta-function to optimize portfolios
 
-optimal.portfolio <- function(input=NULL) {
+optimal.portfolio <- function(input=NULL, ...) {
   # check whether the passed parameter is a portfolio.model
   # if not, create a default model
   if('portfolio.model' %in% class(input)) {
@@ -15,27 +15,30 @@ optimal.portfolio <- function(input=NULL) {
   }
 
   # select appropriate optimization function
+  if (model$objective == "reward") {
+    model <- optimal.portfolio.reward(model, ...) 
+  }
   if (model$objective == "1overN") {
-    model <- optimal.portfolio.1overN(model) 
+    model <- optimal.portfolio.1overN(model, ...) 
   }
   if (model$objective == "momentum") {
-    model <- optimal.portfolio.momentum(model) 
+    model <- optimal.portfolio.momentum(model, ...)
   }
   if (model$objective == "markowitz") {
-    model <- optimal.portfolio.markowitz(model) 
+    model <- optimal.portfolio.markowitz(model, ...)
   }
   if (model$objective == "mad") {
     if (model$active.extension) {
-      model <- optimal.portfolio.mad.long.short(model)
+      model <- optimal.portfolio.mad.long.short(model, ...)
     } else {  
-      model <- optimal.portfolio.mad(model)
+      model <- optimal.portfolio.mad(model, ...)
     }
   }
   if (model$objective == "expected.shortfall") {
     if (model$active.extension) {
-      model <- optimal.portfolio.expected.shortfall.long.short(model)
+      model <- optimal.portfolio.expected.shortfall.long.short(model, ...)
     } else {
-      model <- optimal.portfolio.expected.shortfall(model)
+      model <- optimal.portfolio.expected.shortfall(model, ...)
     }
   }
   

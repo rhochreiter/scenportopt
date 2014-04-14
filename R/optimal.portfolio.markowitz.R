@@ -7,38 +7,32 @@
 
 # minimize { t(x) * Cov(data) * x }
 
-optimal.portfolio.markowitz <- function(input) {
-  if('portfolio.model' %in% class(input)) { 
-    m <- input 
-  } else {
-    m <- portfolio.model(input) 
-  }
-  
-  ### Variables: x
-  n_var <- m$assets
+optimal.portfolio.markowitz <- function(model) {
+  ### Variables: x[asset]
+  n_var <- model$assets
   ix_x <- 1
   
   ### Objective function
   Objective <- list()
-  Objective$quadratic <- cov(m$data)
-  Objective$linear <- rep(0, m$assets)
+  Objective$quadratic <- cov(model$data)
+  Objective$linear <- rep(0, model$assets)
   
   ### Constraints
   Constraints <- list(n=n_var, A=NULL, b=NULL, Aeq=NULL, beq=NULL)
   
   # sum(a) { x[a] } == sum.portfolio
-  Constraints <- linear.constraint.eq(Constraints, c(1:m$assets), m$sum.portfolio)
+  Constraints <- linear.constraint.eq(Constraints, c(1:model$assets), model$sum.portfolio)
 
   # sum(a) { x[a] * mean[a] } => min.mean
-  if(!is.null(m$min.mean)) { Constraints <- linear.constraint.iq(Constraints, c(1:m$assets), -m$min.mean, -1*m$asset.means) }
+  if(!is.null(model$min.mean)) { Constraints <- linear.constraint.iq(Constraints, c((ix_x):(ix_x+model$assets-1)), -model$min.mean, -1*model$asset.means) }
 
   # sum(a) { x[a] * mean[a] } == fix.mean
-  if(!is.null(m$fix.mean)) { Constraints <- linear.constraint.eq(Constraints, c(1:m$assets), m$fix.mean, m$asset.means) }
+  if(!is.null(model$fix.mean)) { Constraints <- linear.constraint.eq(Constraints, c((ix_x):(ix_x+model$assets-1)), model$fix.mean, model$asset.means) }
   
   ### Bounds
   Bounds <- list()
-  if (length(m$asset.bound.lower) == 1) { Bounds$lower <- rep(m$asset.bound.lower, m$assets) } else { Bounds$lower <- m$asset.bound.lower }
-  if (length(m$asset.bound.upper) == 1) { Bounds$upper <- rep(m$asset.bound.upper, m$assets) } else { Bounds$upper <- m$asset.bound.upper }
+  Bounds$lower <- model$asset.bound.lower
+  Bounds$upper <- model$asset.bound.upper
 
   ### Solve optimization problem using modopt.quadprog
   solution <- quadprog(Objective$quadratic, Objective$linear, Constraints$A, Constraints$b, Constraints$Aeq, Constraints$beq, Bounds$lower, Bounds$upper)
@@ -46,7 +40,7 @@ optimal.portfolio.markowitz <- function(input) {
   ### Add optimal portfolio to model  
   portfolio <- list()
   portfolio$x <- solution$x
-  portfolio$x <- round(portfolio$x, m$precision)  
-  m$portfolio <- portfolio
-  return(m) 
+  portfolio$x <- round(portfolio$x, model$precision)  
+  model$portfolio <- portfolio
+  return(model) 
 }

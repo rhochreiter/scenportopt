@@ -19,10 +19,10 @@ optimal.portfolio.momentum <- function(input) {
   weights <- rep(0, nasset(model))
   # active extension
   if (model$active.extension) {
-    if (is.na(model$momentum.long)) { 
+    if (is.null(model$momentum.long)) { 
       n.long <- ceiling(nasset(model) * 0.1)
     } else { n.long <- model$momentum.long }
-    if (is.na(model$momentum.short)) { 
+    if (is.null(model$momentum.short)) { 
       n.short <- n.long 
     } else { n.short <- model$momentum.short }
     weights[sorted.asset.mean.ix[1:n.long]] <- model$sum.long/n.long 
@@ -30,7 +30,7 @@ optimal.portfolio.momentum <- function(input) {
     
   # no active extension
   } else {  
-    if (is.na(model$momentum.long)) { 
+    if (is.null(model$momentum.long)) { 
       n.long <- ceiling(nasset(model) * 0.1) 
     } else {
       n.long <- model$momentum.long
@@ -41,7 +41,7 @@ optimal.portfolio.momentum <- function(input) {
   ### Add momentum portfolio to model  
   portfolio <- list()
   portfolio$x <- weights
-#  portfolio$x <- round(portfolio$x, m$precision)  
+  portfolio$x <- round(portfolio$x, model$precision)  
   model$portfolio <- portfolio
   return(model) 
 }

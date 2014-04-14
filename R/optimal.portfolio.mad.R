@@ -9,48 +9,41 @@
 # for(s) { y[s] + sum(a) { a[s, a] * x[a] } >= 0 }
 # for(s) { y[s] - sum(a) { a[s, a] * x[a] } >= 0 }
 
-optimal.portfolio.mad <- function(input) {
-  if('portfolio.model' %in% class(input)) { 
-    m <- input 
-  } else { 
-    m <- portfolio.model(input) 
-    m$objective <- "mad"
-  }
-
-  ### Variables: x, y
-  n_var <- m$assets + m$scenarios
+optimal.portfolio.mad <- function(model) {
+  ### Variables: x, y[scenario]
+  n_var <- model$assets + model$scenarios
   ix_x <- 1
-  ix_y <- ix_x + m$assets
+  ix_y <- ix_x + model$assets
 
   ### Objective function
   
   # minimize { sum(s) { p[s] * y[s] } } // Konno/Yamazaki: minimize { sum(s) { y[s]/card(y) } }
   Objective <- list()
   Objective$linear <- rep(0, n_var)
-  Objective$linear[ix_y:(ix_y+m$scenarios-1)] <- m$scenario.probabilities
+  Objective$linear[ix_y:(ix_y+model$scenarios-1)] <- model$scenario.probabilities
   
   ### Constraints
   Constraints <- list(n=n_var, A=NULL, b=NULL, Aeq=NULL, beq=NULL)
 
   # sum(a) { x[a] } == sum.portfolio
-  Constraints <- linear.constraint.eq(Constraints, c(ix_x:(ix_x+m$assets-1)), m$sum.portfolio)
+  Constraints <- linear.constraint.eq(Constraints, c((ix_x):(ix_x+model$assets-1)), model$sum.portfolio)
 
   # sum(a) { x[a] * mean[a] } => min.mean
-  if(!is.null(m$min.mean)) { Constraints <- linear.constraint.iq(Constraints, c(1:m$assets), -m$min.mean, -1*m$asset.means) }
+  if(!is.null(model$min.mean)) { Constraints <- linear.constraint.iq(Constraints, c((ix_x):(ix_x+model$assets-1)), -model$min.mean, -1*model$asset.means) }
   
   # sum(a) { x[a] * mean[a] } == fix.mean
-  if(!is.null(m$fix.mean)) { Constraints <- linear.constraint.eq(Constraints, c(1:m$assets), m$fix.mean, m$asset.means) }
+  if(!is.null(model$fix.mean)) { Constraints <- linear.constraint.eq(Constraints, c((ix_x):(ix_x+model$assets-1)), model$fix.mean, model$asset.means) }
   
   ### MAD constraints
 
   # calculate a[s, a]
-  at <- as.matrix(m$data - as.vector(colMeans(as.matrix(m$data))))
+  at <- as.matrix(model$data - as.vector(colMeans(as.matrix(model$data))))
 
   # for(s) { y[s] + sum(a) { a[s, a] * x[a] } >= 0 }
-  for (s in 0:(m$scenarios-1)) { Constraints <- linear.constraint.iq(Constraints, c(ix_x:(ix_x+m$assets-1), ix_y+s), 0, c(-at[(s+1),], -1)) }
+  for (s in 0:(model$scenarios-1)) { Constraints <- linear.constraint.iq(Constraints, c((ix_x):(ix_x+model$assets-1), ix_y+s), 0, c(-at[(s+1),], -1)) }
 
   # for(s) { y[s] - sum(a) { a[s, a] * x[a] } >= 0 }
-  for (s in 0:(m$scenarios-1)) { Constraints <- linear.constraint.iq(Constraints, c(ix_x:(ix_x+m$assets-1), ix_y+s), 0, c(at[(s+1),], -1)) }
+  for (s in 0:(model$scenarios-1)) { Constraints <- linear.constraint.iq(Constraints, c((ix_x):(ix_x+model$assets-1), ix_y+s), 0, c(at[(s+1),], -1)) }
   
   ### Bounds
   Bounds <- list()
@@ -61,16 +54,16 @@ optimal.portfolio.mad <- function(input) {
   Bounds$upper <- rep(M, n_var)
 
   # Portfolio constrained to model parameters
-  Bounds$lower[(ix_x):(ix_x+m$assets-1)] <- m$asset.bound.lower
-  Bounds$upper[(ix_x):(ix_x+m$assets-1)] <- m$asset.bound.upper
+  Bounds$lower[(ix_x):(ix_x+model$assets-1)] <- model$asset.bound.lower
+  Bounds$upper[(ix_x):(ix_x+model$assets-1)] <- model$asset.bound.upper
   
   ### Solve optimization problem using modopt.linprog  
   solution <- linprog(Objective$linear, Constraints$A, Constraints$b, Constraints$Aeq, Constraints$beq, Bounds$lower, Bounds$upper)
   
   ### Add optimal portfolio to model  
   portfolio <- list()
-  portfolio$x <- solution$x[ix_x:(ix_x+m$assets-1)]
-  portfolio$x <- round(portfolio$x, m$precision)  
-  m$portfolio <- portfolio
-  return(m) 
+  portfolio$x <- solution$x[ix_x:(ix_x+model$assets-1)]
+  portfolio$x <- round(portfolio$x, model$precision)  
+  model$portfolio <- portfolio
+  return(model) 
 }
